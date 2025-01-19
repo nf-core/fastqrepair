@@ -1,0 +1,45 @@
+nextflow_pipeline {
+
+    name "Test fastqrepair pipeline"
+    script "../main.nf"
+
+    tag "pipeline"
+    tag "fastqrepair"
+
+    test("Run fastqrepair on 30 paired-end reads with profile test") {
+
+        when {
+            params {
+                // input                   = 'https://raw.githubusercontent.com/nf-core/test-datasets/fastqrepair/testdata/samplesheet_30reads.csv'
+                input                   = 'https://raw.githubusercontent.com/nf-core/test-datasets/fastqrepair/testdata/samplesheet_bigdatazoo.csv'
+                outdir                  = "$outputDir/30reads"
+
+                publish_dir_all_tools   = true
+                num_splits              = 2
+
+                max_cpus                = 2
+                max_memory              = '1.GB'
+                max_time                = '1.h'
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                // { assert snapshot(
+                //     // path("$outputDir/30reads/wiper").list(),
+                //     path("$outputDir/30reads/gather/test_30reads_R1.fastq_recovered_merged_report.txt"),
+                //     path("$outputDir/30reads/gather/test_30reads_R2.fastq_recovered_merged_report.txt"),
+                //     ).match("30reads_paired_end")
+                // },
+                // { assert new File("$outputDir/30reads/pipeline_info/nf-core_fastqrepair_versions.yml").exists() },
+                // { assert new File("$outputDir/30reads/pickup/test_30reads_R1_repaired.fastq.gz").exists() },
+                // { assert new File("$outputDir/30reads/pickup/test_30reads_R2_repaired.fastq.gz").exists() },
+                // { assert new File("$outputDir/30reads/gather/test_30reads_R1.fastq_recovered_merged_report.txt").readLines()[0].contains("FASTQWIPER SUMMARY:") },
+                // { assert new File("$outputDir/30reads/gather/test_30reads_R1.fastq_recovered_merged_report.txt").readLines()[2].contains("68/149 (45.64%)") }
+
+                // { assert snapshot(UTILS.removeNextflowVersion("$outputDir")).match("single_end_software_versions") }
+            )
+        }
+    }
+}

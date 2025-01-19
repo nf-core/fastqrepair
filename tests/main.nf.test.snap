@@ -1,0 +1,13 @@
+{
+    "30reads_paired_end": {
+        "content": [
+            "test_30reads_R1.fastq_recovered_merged_report.txt:md5,0c24cc9a44a41cd022f21c474913ddd3",
+            "test_30reads_R2.fastq_recovered_merged_report.txt:md5,53f7d37cd1d554872fe459c332e41025"
+        ],
+        "meta": {
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
+        },
+        "timestamp": "2024-10-19T16:57:37.198807"
+    }
+}

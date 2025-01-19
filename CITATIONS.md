@@ -12,11 +12,27 @@
 
 - [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
 
-  > Andrews, S. (2010). FastQC: A Quality Control Tool for High Throughput Sequence Data [Online].
+> Andrews, S. (2010). FastQC: A Quality Control Tool for High Throughput Sequence Data [Online].
+
+- [gzrt](https://www.urbanophile.com/arenn/hacking/gzrt/gzrt.html)
+
+> Renn, A. M. (2013). The gzip Recovery Toolkit [Online].
+
+- [WiperTools](https://github.com/mazzalab/fastqwiper)
+
+> Mazza, T. (2024). WiperTools. [![DOI](https://zenodo.org/badge/325529896.svg)](https://doi.org/10.5281/zenodo.14176147){: style="float:right"}
+
+- [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic)
+
+> Bolger, A. M., Lohse, M., & Usadel, B. (2014). Trimmomatic: A flexible trimmer for Illumina Sequence Data. Bioinformatics, 2014 Aug 1;30(15):2114-20
+
+- [BBMap](http://sourceforge.net/projects/bbmap/)
+
+> Bushnell B. (2024). BBMap [Online]
 
 - [MultiQC](https://pubmed.ncbi.nlm.nih.gov/27312411/)
 
-  > Ewels P, Magnusson M, Lundin S, Käller M. MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics. 2016 Oct 1;32(19):3047-8. doi: 10.1093/bioinformatics/btw354. Epub 2016 Jun 16. PubMed PMID: 27312411; PubMed Central PMCID: PMC5039924.
+> Ewels P, Magnusson M, Lundin S, Käller M. MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics. 2016 Oct 1;32(19):3047-8. doi: 10.1093/bioinformatics/btw354. Epub 2016 Jun 16. PubMed PMID: 27312411; PubMed Central PMCID: PMC5039924.
 
 ## Software packaging/containerisation tools
 

@@ -1,6 +1,14 @@
-nf_core_version: 2.14.1
+nf_core_version: 3.1.1
 repository_type: pipeline
 template:
-  prefix: nf-core
-  skip:
-  - igenomes
+  author: Tommaso Mazza
+  description: A pipeline to recover corrupted FASTQ files, drop or fix pesky lines,
+    remove unpaired reads, and settle reads interleaving
+  force: false
+  is_nfcore: true
+  name: fastqrepair
+  org: nf-core
+  outdir: .
+  skip_features:
+    - igenomes
+  version: 1.0.0
