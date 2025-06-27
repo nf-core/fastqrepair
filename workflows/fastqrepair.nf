@@ -3,6 +3,7 @@
     IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
+include { FQ_LINT                 } from '../modules/nf-core/fq/lint/main'
 include { FASTQC                  } from '../modules/nf-core/fastqc/main'
 include { MULTIQC                 } from '../modules/nf-core/multiqc/main'
 include { GZRT                    } from '../modules/nf-core/gzrt/main'
@@ -35,6 +36,22 @@ workflow FASTQREPAIR {
     def ch_multiqc_files = channel.empty()
 
     ch_final = channel.empty()      // channel: repaired fastq files
+
+    ch_samples = ch_samplesheet
+    if (!params.skip_fq_lint) {
+        FQ_LINT(ch_samplesheet)
+        ch_versions = ch_versions.mix(FQ_LINT.out.versions.first())
+        FQ_LINT.out.lint.map { meta, it -> [meta, file(it).text] }
+            .filter {
+                meta, text -> text.contains('ERROR') or text.contains('read 0 records') or !text.contains("fq-lint end")
+                }
+            .set { ch_lint_failed }
+
+        ch_samplesheet
+            .join(ch_lint_failed)
+            .map {meta, it, text -> [meta, it]}
+            .set{ ch_samples }
+    }
 
     // branch .gz and non gz files
     ch_fastq_ext = channel.empty()
