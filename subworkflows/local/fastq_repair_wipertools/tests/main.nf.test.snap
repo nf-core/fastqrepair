@@ -6,6 +6,7 @@
                     [
                         {
                             "id": "test_1",
+                            "mate": 1,
                             "sample_id": "test",
                             "single_end": false
                         },
@@ -14,6 +15,7 @@
                     [
                         {
                             "id": "test_2",
+                            "mate": 2,
                             "sample_id": "test",
                             "single_end": false
                         },
@@ -68,6 +70,7 @@
                     [
                         {
                             "id": "test_1",
+                            "mate": 1,
                             "sample_id": "test",
                             "single_end": false
                         },
@@ -76,6 +79,7 @@
                     [
                         {
                             "id": "test_2",
+                            "mate": 2,
                             "sample_id": "test",
                             "single_end": false
                         },
