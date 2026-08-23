@@ -1,0 +1,43 @@
+nextflow_workflow {
+
+    name "Test mate metadata in FASTQ_REPAIR_WIPERTOOLS"
+    script "../main.nf"
+    workflow "FASTQ_REPAIR_WIPERTOOLS"
+
+    tag "subworkflows"
+    tag "subworkflows/fastq_repair_wipertools"
+    tag "mate_metadata"
+
+    test("mate assignment follows input order, not filenames") {
+        options "-stub"
+
+        when {
+            params {
+                outdir            = "$outputDir/mate_metadata"
+                publish_dir_mode  = "copy"
+                num_splits        = 2
+                skip_bbmap_repair = true
+            }
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [ id:'misleading_1_name', single_end:false ],
+                    [file("\${projectDir}/subworkflows/local/fastq_repair_wipertools/tests/fixtures/ambiguous_2.fastq", checkIfExists: true),
+                    file("\${projectDir}/subworkflows/local/fastq_repair_wipertools/tests/fixtures/ambiguous_1.fastq", checkIfExists: true)]
+                ])
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert workflow.out.wiped_fastq.collect { it[0].mate }.sort() == [1, 2] },
+                { assert new File("$outputDir/mate_metadata/repaired/misleading_1_name_1.fastq.gz").exists() },
+                { assert new File("$outputDir/mate_metadata/repaired/misleading_1_name_2.fastq.gz").exists() },
+                { assert new File("$outputDir/mate_metadata/repaired/misleading_1_name_1.report").exists() },
+                { assert new File("$outputDir/mate_metadata/repaired/misleading_1_name_2.report").exists() }
+            )
+        }
+    }
+}
