@@ -59,6 +59,12 @@
                     "description": "This option tells the pipeline to skip the BBMap re-pair step.",
                     "fa_icon": "fas fa-puzzle-piece"
                 },
+                "skip_fq_lint": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Skip the fq lint step.",
+                    "fa_icon": "fas fa-puzzle-piece"
+                },
                 "publish_all_tools": {
                     "type": "boolean",
                     "default": false,
