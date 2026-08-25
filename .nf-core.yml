@@ -1,7 +1,5 @@
 nf_core_version: 4.0.3
 repository_type: pipeline
-lint:
-  included_configs: false
 template:
   author: Tommaso Mazza
   description: A pipeline to recover corrupted FASTQ files, drop or fix pesky lines, remove unpaired reads, and settle reads interleaving
