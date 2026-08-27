@@ -15,7 +15,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { FASTQREPAIR             } from './workflows/fastqrepair'
+include { FASTQREPAIR  } from './workflows/fastqrepair'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_fastqrepair_pipeline'
 include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_fastqrepair_pipeline'
 /*
