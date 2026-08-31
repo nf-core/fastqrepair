@@ -1,0 +1,12 @@
+.DS_Store
+QC/multiqc/multiqc_data/fastqc_top_overrepresented_sequences_table.txt
+QC/multiqc/multiqc_data/multiqc.parquet
+QC/multiqc/multiqc_data/multiqc.log
+QC/multiqc/multiqc_data/multiqc_data.json
+QC/multiqc/multiqc_data/multiqc_sources.txt
+QC/multiqc/multiqc_data/multiqc_software_versions.txt
+QC/multiqc/multiqc_data/llms-full.txt
+QC/multiqc/multiqc_plots/{svg,pdf,png}/*.{svg,pdf,png}
+QC/multiqc/multiqc_report.html
+QC/fastqc/*_fastqc.{html,zip}
+pipeline_info/*.{html,json,txt,yml}

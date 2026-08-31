@@ -11,7 +11,7 @@ nextflow_pipeline {
         when {
             params {
                 input                   = 'https://raw.githubusercontent.com/nf-core/test-datasets/fastqrepair/testdata/samplesheet_30reads.csv'
-                outdir                  = "$outputDir/30reads"
+                outdir                  = "$outputDir"
 
                 publish_all_tools       = true
                 num_splits              = 2
@@ -22,19 +22,19 @@ nextflow_pipeline {
             assertAll(
                 { assert workflow.success },
                 { assert snapshot(
-                    path("$outputDir/30reads/repaired").list(),
-                    path("$outputDir/30reads/repaired/test_30reads_2.report"),
-                    path("$outputDir/30reads/pipeline_info/nf-core_fastqrepair_versions.yml"),
-                    file("$outputDir/30reads/QC/multiqc/multiqc_report.html").exists(),
-                    file("$outputDir/30reads/QC/fastqc/test_30reads_2.fastqc.html").exists(),
+                    path("$outputDir/repaired").list(),
+                    path("$outputDir/repaired/test_30reads_2.report"),
+                    path("$outputDir/pipeline_info/nf_core_fastqrepair_software_mqc_versions.yml"),
+                    file("$outputDir/QC/multiqc/multiqc_report.html").exists(),
+                    file("$outputDir/QC/fastqc/test_30reads_2.fastqc.html").exists(),
                     ).match("30reads_final")
                 },
-                { assert path("$outputDir/30reads/repaired").list().size() == 2 },
-                { assert new File("$outputDir/30reads/pipeline_info/nf-core_fastqrepair_versions.yml").exists() },
-                { assert new File("$outputDir/30reads/repaired/test_30reads_2.fastq.gz").exists() },
-                { assert new File("$outputDir/30reads/repaired/test_30reads_2.report").exists() },
-                { assert new File("$outputDir/30reads/repaired/test_30reads_2.report").readLines()[0].contains("FASTQWIPER REPORT:") },
-                { assert new File("$outputDir/30reads/repaired/test_30reads_2.report").readLines()[3].contains("96 (92.31%)") }
+                { assert path("$outputDir/repaired").list().size() == 2 },
+                { assert new File("$outputDir/pipeline_info/nf_core_fastqrepair_software_mqc_versions.yml").exists() },
+                { assert new File("$outputDir/repaired/test_30reads_2.fastq.gz").exists() },
+                { assert new File("$outputDir/repaired/test_30reads_2.report").exists() },
+                { assert new File("$outputDir/repaired/test_30reads_2.report").readLines()[0].contains("FASTQWIPER REPORT:") },
+                { assert new File("$outputDir/repaired/test_30reads_2.report").readLines()[3].contains("96 (92.31%)") }
             )
         }
     }

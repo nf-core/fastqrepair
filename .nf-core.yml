@@ -1,8 +1,9 @@
-nf_core_version: 3.2.0
+nf_core_version: 4.0.3
 repository_type: pipeline
 template:
   author: Tommaso Mazza
-  description: A pipeline to recover corrupted FASTQ files, drop or fix pesky lines, remove unpaired reads, and settle reads interleaving
+  description: A pipeline to recover corrupted FASTQ files, drop or fix pesky lines,
+    remove unpaired reads, and settle reads interleaving
   force: false
   is_nfcore: true
   name: fastqrepair
@@ -10,10 +11,4 @@ template:
   outdir: .
   skip_features:
     - igenomes
-  version: 1.0.0
-lint:
-  files_exist:
-    - .github/workflows/linting_comment.yml
-  files_unchanged:
-    - .github/workflows/branch.yml
-    - .github/workflows/linting.yml
+  version: 1.1.1

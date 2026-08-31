@@ -24,13 +24,20 @@ include { isFastqFileEmpty        } from '../subworkflows/local/utils_nfcore_fas
 workflow FASTQREPAIR {
     take:
     ch_samplesheet // channel: samplesheet read in from --input
+    multiqc_config
+    multiqc_logo
+    multiqc_methods_description
+    outdir
 
     main:
-    ch_final = Channel.empty()      // channel: repaired fastq files
-    ch_versions = Channel.empty()   // channel: versions of the software used in the pipeline
+
+    def ch_versions = channel.empty()
+    def ch_multiqc_files = channel.empty()
+
+    ch_final = channel.empty()      // channel: repaired fastq files
 
     // branch .gz and non gz files
-    ch_fastq_ext = Channel.empty()
+    ch_fastq_ext = channel.empty()
     ch_samplesheet
     | branch { _map, fq ->
         gz_files: fq.first().getExtension() == 'gz'
@@ -44,7 +51,7 @@ workflow FASTQREPAIR {
     ch_versions = ch_versions.mix(GZRT.out.versions.first())
 
     // Join recovered gz files with non-gz files and filter empty files out
-    ch_tobewiped_fastq = Channel.empty()
+    ch_tobewiped_fastq = channel.empty()
     GZRT.out.recovered
     | concat ( ch_fastq_ext.non_gz_files )
     | filter { meta, fileList -> meta.single_end
@@ -55,16 +62,16 @@ workflow FASTQREPAIR {
     // If all input files are empty, then skip the rest of the pipeline
     ch_tobewiped_fastq
     | ifEmpty {
-        log.warn "No non-empty FASTQ files found after GZRT. Skipping the rest of the pipeline for ${meta.id}"
+        log.warn "No non-empty FASTQ files found after GZRT. Skipping the rest of the pipeline!"
     }
 
     // If ch_tobewiped_fastq has a size < ch_samplesheet but > zero, then some files were empty and we need to log.warn them
-    ch_samplesheet.map { meta, _ -> meta.id }
+    ch_samplesheet.map { meta, _fastq -> meta.id }
         .collect()
         .set { all_ids }
 
     // Extract meta.id from ch_subset and collect into a list
-    ch_tobewiped_fastq.map { meta, _ -> meta.id }
+    ch_tobewiped_fastq.map { meta, _fastq -> meta.id }
         .collect()
         .set { subset_ids }
 
@@ -73,20 +80,20 @@ workflow FASTQREPAIR {
     //
     // Make fastq compliant and wipe bad characters
     //
-    ch_repaired_fastq = Channel.empty()
+    ch_repaired_fastq = channel.empty()
     FASTQ_REPAIR_WIPERTOOLS (ch_tobewiped_fastq)
     ch_versions = ch_versions.mix(FASTQ_REPAIR_WIPERTOOLS.out.versions.first())
 
     FASTQ_REPAIR_WIPERTOOLS.out.wiped_fastq
     | map { meta, fq -> [meta.subMap('sample_id', 'single_end'), fq]}
     | map { meta, fq -> [['id':meta.sample_id, 'single_end':meta.single_end], fq]}
-    | branch {
-        single_end: it[0].single_end == true
-        paired_end: it[0].single_end == false }
+    | branch { item ->
+        single_end: item[0].single_end == true
+        paired_end: item[0].single_end == false }
     | set { ch_repaired_fastq }
 
     // Group paired-reads by 'sample_id' and rename keys
-    ch_repaired_fastq_paired_end = Channel.empty()
+    ch_repaired_fastq_paired_end = channel.empty()
     ch_repaired_fastq.paired_end
     | groupTuple
     | set { ch_repaired_fastq_paired_end }
@@ -98,7 +105,7 @@ workflow FASTQREPAIR {
         BBMAP_REPAIR (ch_repaired_fastq_paired_end, false)
         ch_versions = ch_versions.mix(BBMAP_REPAIR.out.versions.first())
 
-        ch_repaired_fastq_paired_end_singleton = Channel.empty()
+        ch_repaired_fastq_paired_end_singleton = channel.empty()
         BBMAP_REPAIR.out.repaired
         | concat ( BBMAP_REPAIR.out.singleton )
         | groupTuple
@@ -114,59 +121,65 @@ workflow FASTQREPAIR {
     // Assess QC of all fastq files (both single and paired end)
     //
     FASTQC ( ch_final )
-    ch_versions = ch_versions.mix(FASTQC.out.versions.first())
+    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.map{ _meta, file -> file })
 
+    //
+    // Collate and save software versions
+    //
+    def topic_versions = channel.topic("versions")
+        .distinct()
+        .branch { entry ->
+            versions_file: entry instanceof Path
+            versions_tuple: true
+        }
 
-    softwareVersionsToYAML(ch_versions)
+    def topic_versions_string = topic_versions.versions_tuple
+        .map { process, tool, version ->
+            [ process[process.lastIndexOf(':')+1..-1], "  ${tool}: ${version}" ]
+        }
+        .groupTuple(by:0)
+        .map { process, tool_versions ->
+            tool_versions.unique().sort()
+            "${process}:\n${tool_versions.join('\n')}"
+        }
+
+    def ch_collated_versions = softwareVersionsToYAML(ch_versions.mix(topic_versions.versions_file))
+        .mix(topic_versions_string)
         .collectFile(
-            storeDir: "${params.outdir}/pipeline_info",
-            name: 'nf-core_fastqrepair_versions.yml',
+            storeDir: "${outdir}/pipeline_info",
+            name: 'nf_core_'  +  'fastqrepair_software_'  + 'mqc_'  + 'versions.yml',
             sort: true,
             newLine: true
-        ).set { ch_collated_versions }
+        )
 
     //
     // MODULE: MultiQC
     //
-    ch_multiqc_files = Channel.empty()
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]})
-
-    ch_multiqc_config = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
-    ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multiqc_config, checkIfExists: true) : Channel.empty()
-    ch_multiqc_logo          = params.multiqc_logo ?
-        Channel.fromPath(params.multiqc_logo, checkIfExists: true) :
-        Channel.empty()
-
-    summary_params      = paramsSummaryMap(
-        workflow, parameters_schema: "nextflow_schema.json")
-    ch_workflow_summary = Channel.value(paramsSummaryMultiqc(summary_params))
-    ch_multiqc_files = ch_multiqc_files.mix(
-        ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
-    ch_multiqc_custom_methods_description = params.multiqc_methods_description ?
-        file(params.multiqc_methods_description, checkIfExists: true) :
-        file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
-    ch_methods_description                = Channel.value(
-        methodsDescriptionText(ch_multiqc_custom_methods_description))
-
     ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)
-    ch_multiqc_files = ch_multiqc_files.mix(
-        ch_methods_description.collectFile(
-            name: 'methods_description_mqc.yaml',
-            sort: true
-        )
+    def ch_summary_params = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
+    def ch_workflow_summary = channel.value(paramsSummaryMultiqc(ch_summary_params))
+    ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
+    def ch_multiqc_custom_methods_description = multiqc_methods_description
+        ? file(multiqc_methods_description, checkIfExists: true)
+        : file("${projectDir}/assets/methods_description_template.yml", checkIfExists: true)
+    def ch_methods_description = channel.value(methodsDescriptionText(ch_multiqc_custom_methods_description))
+    ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml', sort: true))
+    MULTIQC(
+        ch_multiqc_files.flatten().collect().map { files ->
+            [
+                [id: 'fastqrepair'],
+                files,
+                multiqc_config
+                    ? file(multiqc_config, checkIfExists: true)
+                    : file("${projectDir}/assets/multiqc_config.yml", checkIfExists: true),
+                multiqc_logo ? file(multiqc_logo, checkIfExists: true) : [],
+                [],
+                [],
+            ]
+        }
     )
-
-    MULTIQC (
-        ch_multiqc_files.collect(),
-        ch_multiqc_config.toList(),
-        ch_multiqc_custom_config.toList(),
-        ch_multiqc_logo.toList(),
-        [],
-        []
-    )
-
-    emit:multiqc_report = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
-    versions            = ch_versions                 // channel: [ path(versions.yml) ]
+    emit:multiqc_report = MULTIQC.out.report.map { _meta, report -> [report] }.toList() // channel: /path/to/multiqc_report.html
+    versions       = ch_versions                 // channel: [ path(versions.yml) ]
 }
 
 /*

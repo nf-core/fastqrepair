@@ -33,7 +33,7 @@
                 "num_splits": {
                     "type": "integer",
                     "default": 2,
-                    "pattern": "^[1-9]\\d*$",
+                    "minimum": 1,
                     "description": "FASTQ chunk numbers for parallel processing.",
                     "help_text": "The input fastq file will be split into this number of chunks to speedup wiping. The number must be > 0.",
                     "fa_icon": "fas fa-puzzle-piece"
@@ -56,7 +56,7 @@
                 "skip_bbmap_repair": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Skip the BBMap re-pair step.",
+                    "description": "This option tells the pipeline to skip the BBMap re-pair step.",
                     "fa_icon": "fas fa-puzzle-piece"
                 },
                 "publish_all_tools": {
@@ -179,13 +179,6 @@
                     "fa_icon": "fas fa-palette",
                     "hidden": true
                 },
-                "hook_url": {
-                    "type": "string",
-                    "description": "Incoming hook URL for messaging service",
-                    "fa_icon": "fas fa-people-group",
-                    "help_text": "Incoming hook URL for messaging service. Currently, MS Teams and Slack are supported.",
-                    "hidden": true
-                },
                 "multiqc_config": {
                     "type": "string",
                     "format": "file-path",
@@ -234,6 +227,18 @@
                     "fa_icon": "far calendar",
                     "description": "Suffix to add to the trace report filename. Default is the date and time in the format yyyy-MM-dd_HH-mm-ss.",
                     "hidden": true
+                },
+                "help": {
+                    "type": ["boolean", "string"],
+                    "description": "Display the help message."
+                },
+                "help_full": {
+                    "type": "boolean",
+                    "description": "Display the full detailed help message."
+                },
+                "show_hidden": {
+                    "type": "boolean",
+                    "description": "Display hidden parameters in the help message (only works when --help or --help_full are provided)."
                 }
             }
         }

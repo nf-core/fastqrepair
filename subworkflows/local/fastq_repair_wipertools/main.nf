@@ -43,11 +43,16 @@ workflow FASTQ_REPAIR_WIPERTOOLS {
     ch_versions = ch_versions.mix(WIPERTOOLS_FASTQWIPER.out.versions.first())
 
     // group wiped chunks
+    // Chunks arrive in process-completion order, which varies run to run; sort by
+    // the chunk's own id (meta.id) before gathering so the reassembled fastq is reproducible.
     ch_cleaned_fastq = Channel.empty()
     WIPERTOOLS_FASTQWIPER.out.wiped_fastq
-    | map { meta, fq -> [meta.subMap('mate_id', 'sample_id', 'single_end'), fq]}
+    | map { meta, fq -> [meta.subMap('mate_id', 'sample_id', 'single_end'), [meta.id, fq]] }
     | groupTuple
-    | map { meta, fq -> [['id':meta.mate_id, 'sample_id':meta.sample_id, 'single_end':meta.single_end], fq]}
+    | map { meta, id_fq ->
+        def fq = id_fq.sort { a, b -> a[0] <=> b[0] }.collect { it[1] }
+        [['id':meta.mate_id, 'sample_id':meta.sample_id, 'single_end':meta.single_end], fq]
+      }
     | set { ch_cleaned_fastq }
 
     // gather fastq files

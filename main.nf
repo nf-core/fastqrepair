@@ -15,7 +15,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { FASTQREPAIR             } from './workflows/fastqrepair'
+include { FASTQREPAIR  } from './workflows/fastqrepair'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_fastqrepair_pipeline'
 include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_fastqrepair_pipeline'
 /*
@@ -38,7 +38,11 @@ workflow NFCORE_FASTQREPAIR {
     // WORKFLOW: Run pipeline
     //
     FASTQREPAIR (
-        samplesheet
+        samplesheet,
+        params.multiqc_config,
+        params.multiqc_logo,
+        params.multiqc_methods_description,
+        params.outdir,
     )
     emit:
     multiqc_report = FASTQREPAIR.out.multiqc_report // channel: /path/to/multiqc_report.html
@@ -61,7 +65,10 @@ workflow {
         params.monochrome_logs,
         args,
         params.outdir,
-        params.input
+        params.input,
+        params.help,
+        params.help_full,
+        params.show_hidden
     )
 
     //
@@ -79,7 +86,6 @@ workflow {
         params.plaintext_email,
         params.outdir,
         params.monochrome_logs,
-        params.hook_url,
         NFCORE_FASTQREPAIR.out.multiqc_report
     )
 }
