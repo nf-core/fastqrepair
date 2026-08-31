@@ -25,7 +25,7 @@ First release since v1.0.0. Includes the never-released v1.1.0 changes plus a nf
 - `--hook_url` parameter and the Slack/Microsoft Teams notification assets (`assets/slackreport.json`, `assets/adaptivecard.json`), dropped by the template
 - `gitpod` profile and `.gitpod.yml`; the `arm` profile is replaced by `arm64` plus `emulate_amd64`
 
-## v[1.0.0](https://github.com/nf-core/fastqrepair/releases/tag/1.1.0dev) - Catanzaro YellowRed [04/02/2025]
+## v[1.0.0](https://github.com/nf-core/fastqrepair/releases/tag/1.0.0) - Catanzaro YellowRed [04/02/2025]
 
 Initial release of nf-core/fastqrepair, created with the [nf-core](https://nf-co.re/) template.
 
