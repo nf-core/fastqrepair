@@ -9,7 +9,7 @@ nextflow_pipeline {
     test("clean sample bypasses repair, corrupt sample gets repaired - both present in outputs") {
         when {
             params {
-                input                   = 'https://raw.githubusercontent.com/nf-core/test-datasets/fastqrepair/testdata/samplesheet_30reads.csv'
+                input                   = 'https://raw.githubusercontent.com/nf-core/test-datasets/fastqrepair/testdata/samplesheet_30reads_correct.csv'
                 outdir                  = "$outputDir"
 
             }
@@ -24,9 +24,11 @@ nextflow_pipeline {
             assert path("$outputDir/fastqc/corrupt_sample_fastqc.zip").exists()
 
             // MultiQC report should reference both sample ids.
-            def multiqcData = path("$outputDir/multiqc/multiqc_data/multiqc_general_stats.txt").text
-            assert multiqcData.contains("clean_sample")
-            assert multiqcData.contains("corrupt_sample")
+            def multiqcData = path("$outputDir/QC/multiqc/multiqc_data/multiqc_general_stats.txt").text
+            assert multiqcData.contains("test_30reads_2")
+            assert multiqcData.contains("test_correct_1")
+            assert multiqcData.contains("test_correct_2")
         }
     }
 }
+
