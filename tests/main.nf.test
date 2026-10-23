@@ -24,7 +24,8 @@ nextflow_pipeline {
                 { assert snapshot(
                     path("$outputDir/repaired").list(),
                     path("$outputDir/repaired/test_30reads_2.report"),
-                    path("$outputDir/pipeline_info/nf_core_fastqrepair_software_mqc_versions.yml"),
+                    // versions file with the Nextflow version removed, since the pipeline is tested on multiple Nextflow versions
+                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_fastqrepair_software_mqc_versions.yml"),
                     file("$outputDir/QC/multiqc/multiqc_report.html").exists(),
                     file("$outputDir/QC/fastqc/test_30reads_2.fastqc.html").exists(),
                     ).match("30reads_final")
