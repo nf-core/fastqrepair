@@ -40,4 +40,35 @@ nextflow_workflow {
             )
         }
     }
+
+    test("single-end samples have no mate and keep their plain name") {
+        options "-stub"
+
+        when {
+            params {
+                outdir            = "$outputDir/single_end"
+                publish_dir_mode  = "copy"
+                num_splits        = 2
+                skip_bbmap_repair = true
+            }
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [ id:'solo', single_end:true ],
+                    [file("\${projectDir}/subworkflows/local/fastq_repair_wipertools/tests/fixtures/ambiguous_1.fastq", checkIfExists: true)]
+                ])
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert workflow.out.wiped_fastq.collect { it[0].mate } == [null] },
+                { assert new File("$outputDir/single_end/repaired/solo.fastq.gz").exists() },
+                { assert new File("$outputDir/single_end/repaired/solo.report").exists() },
+                { assert !new File("$outputDir/single_end/repaired/solo_1.fastq.gz").exists() }
+            )
+        }
+    }
 }
