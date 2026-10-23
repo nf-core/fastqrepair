@@ -6,18 +6,18 @@
                     [
                         {
                             "id": "test_1",
-                            "mate": 1,
                             "sample_id": "test",
-                            "single_end": false
+                            "single_end": false,
+                            "mate": 1
                         },
                         "test_1_gather.fastq.gz:md5,4161df271f9bfcd25d5845a1e220dbec"
                     ],
                     [
                         {
                             "id": "test_2",
-                            "mate": 2,
                             "sample_id": "test",
-                            "single_end": false
+                            "single_end": false,
+                            "mate": 2
                         },
                         "test_2_gather.fastq.gz:md5,2ebae722295ea66d84075a3b042e2b42"
                     ]
@@ -70,18 +70,18 @@
                     [
                         {
                             "id": "test_1",
-                            "mate": 1,
                             "sample_id": "test",
-                            "single_end": false
+                            "single_end": false,
+                            "mate": 1
                         },
                         "test_1_gather.fastq.gz:md5,4161df271f9bfcd25d5845a1e220dbec"
                     ],
                     [
                         {
                             "id": "test_2",
-                            "mate": 2,
                             "sample_id": "test",
-                            "single_end": false
+                            "single_end": false,
+                            "mate": 2
                         },
                         "test_2_gather.fastq.gz:md5,2ebae722295ea66d84075a3b042e2b42"
                     ]
