@@ -3,6 +3,15 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v[1.1.2](https://github.com/nf-core/fastqrepair/releases/tag/1.1.2) - [release name] [date]
+
+nf-core/tools v4.1.0 update
+
+### `Changed`
+
+- [PR #55](https://github.com/nf-core/fastqrepair/pull/55) - Template update for nf-core/tools v4.1.0
+- Replaced `fix_linting.yml` with `fix-linting.yml`, a call to the shared `nf-core/actions` reusable workflow, and moved `seqeralabs/action-tower-launch` to `v2.4.0` (automated patch PRs [#56](https://github.com/nf-core/fastqrepair/pull/56) and [#57](https://github.com/nf-core/fastqrepair/pull/57))
+
 ## v[1.1.1](https://github.com/nf-core/fastqrepair/releases/tag/1.1.1) - Reggina Amaranth [27/08/2026]
 
 First release since v1.0.0. Includes the never-released v1.1.0 changes plus a nf-core/tools v4.0.3 template update (supersedes the pending v3.4.1, v3.5.1 and v4.0.2 template merges).
