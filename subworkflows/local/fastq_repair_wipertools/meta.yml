@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/subworkflows/yaml-schema.json
+name: "fastq_repair_wipertools"
+description: Apply Wipertools to readable FASTQ files
+keywords:
+  - malformed
+  - fastq
+  - clean
+  - well-formed
+components:
+  - wipertools/fastqwiper
+  - wipertools/fastqscatter
+  - wipertools/fastqgather
+  - wipertools/reportgather
+input:
+  - ch_fastq:
+      type: file
+      description: |
+        The input channel containing the FASTQ files
+        Structure: [ val(meta), path(fastq) ]
+      pattern: "*.{fastq.gz/fastq/fq.gz/fq}"
+output:
+  - wiped_fastq:
+      type: file
+      description: |
+        Channel containing well-formed FASTQ files
+        Structure: [ val(meta), path(fastq) ]
+      pattern: "*.{fastq.gz/fastq/fq.gz/fq}"
+  - report:
+      type: file
+      description: |
+        Channel containing the quality report of fastqwiper
+        Structure: [ val(meta), path(report) ]
+      pattern: "*.report"
+  - versions:
+      type: file
+      description: |
+        File containing software versions
+        Structure: [ path(versions.yml) ]
+      pattern: "versions.yml"
+authors:
+  - "@mazzalab"
+maintainers:
+  - "@mazzalab"

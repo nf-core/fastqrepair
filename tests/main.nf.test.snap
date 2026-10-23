@@ -1,0 +1,19 @@
+{
+    "30reads_final": {
+        "content": [
+            [
+                "test_30reads_2.fastq.gz:md5,688d1247ff20870b1f30cd39976007ba",
+                "test_30reads_2.report:md5,66c4833c1d7d2a94a34a786873869c7a"
+            ],
+            "test_30reads_2.report:md5,66c4833c1d7d2a94a34a786873869c7a",
+            "nf_core_fastqrepair_software_mqc_versions.yml:md5,29a3df31542b6f25b88b354068bd5f57",
+            true,
+            false
+        ],
+        "timestamp": "2026-08-09T12:12:14.318955262",
+        "meta": {
+            "nf-test": "0.9.4",
+            "nextflow": "25.10.4"
+        }
+    }
+}

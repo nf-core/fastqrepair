@@ -2,7 +2,7 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://raw.githubusercontent.com/nf-core/fastqrepair/main/nextflow_schema.json",
     "title": "nf-core/fastqrepair pipeline parameters",
-    "description": "A pipeline to recover corrupted FASTQ files, drop or fix pesky lines, remove unpaired reads, and settle reads interleaving",
+    "description": "A pipeline that can be used to recover corrupted FASTQ.gz files, drop or fix uncompliant reads, remove unpaired reads, and settle reads that became disordered",
     "type": "object",
     "$defs": {
         "input_output_options": {
@@ -26,20 +26,46 @@
                 "outdir": {
                     "type": "string",
                     "format": "directory-path",
-                    "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
+                    "description": "The output directory where the results will be saved.",
+                    "help_text": "You have to use absolute paths to storage on Cloud infrastructure.",
                     "fa_icon": "fas fa-folder-open"
                 },
-                "email": {
-                    "type": "string",
-                    "description": "Email address for completion summary.",
-                    "fa_icon": "fas fa-envelope",
-                    "help_text": "Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits. If set in your user config file (`~/.nextflow/config`) then you don't need to specify this on the command line for every run.",
-                    "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$"
+                "num_splits": {
+                    "type": "integer",
+                    "default": 2,
+                    "minimum": 1,
+                    "description": "FASTQ chunk numbers for parallel processing.",
+                    "help_text": "The input fastq file will be split into this number of chunks to speedup wiping. The number must be > 0.",
+                    "fa_icon": "fas fa-puzzle-piece"
                 },
-                "multiqc_title": {
+                "qin": {
+                    "type": "integer",
+                    "enum": [33, 64],
+                    "default": 33,
+                    "description": "the ASCII offset for BBMap (33=Sanger, 64=old Solexa).",
+                    "fa_icon": "fas fa-puzzle-piece"
+                },
+                "alphabet": {
                     "type": "string",
-                    "description": "MultiQC report title. Printed as page header, used for filename if not otherwise specified.",
-                    "fa_icon": "fas fa-file-signature"
+                    "default": "ACGTN",
+                    "pattern": "^[^0-9]+$",
+                    "description": "Allowed character in the SEQ line for Wipertools.",
+                    "help_text": "SEQ lines containing characters not listed here will be discarded by Wipertools",
+                    "fa_icon": "fas fa-solid fa-arrows-left-right-to-line"
+                },
+                "skip_bbmap_repair": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "This option tells the pipeline to skip the BBMap re-pair step.",
+                    "fa_icon": "fas fa-puzzle-piece"
+                },
+                "publish_all_tools": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Publish intermediate results.",
+                    "help_text": "This option tells the pipeline to publish all intermediate results in the output directory.",
+                    "fa_icon": "fas fa-copy",
+                    "hidden": false
                 }
             }
         },
@@ -127,6 +153,18 @@
                     "fa_icon": "fas fa-remove-format",
                     "hidden": true
                 },
+                "email": {
+                    "type": "string",
+                    "description": "Email address for completion summary.",
+                    "fa_icon": "fas fa-envelope",
+                    "help_text": "Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits. If set in your user config file (`~/.nextflow/config`) then you don't need to specify this on the command line for every run.",
+                    "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$"
+                },
+                "multiqc_title": {
+                    "type": "string",
+                    "description": "MultiQC report title. Printed as page header, used for filename if not otherwise specified.",
+                    "fa_icon": "fas fa-file-signature"
+                },
                 "max_multiqc_email_size": {
                     "type": "string",
                     "description": "File size limit when attaching MultiQC reports to summary emails.",
@@ -157,7 +195,18 @@
                 "multiqc_methods_description": {
                     "type": "string",
                     "description": "Custom MultiQC yaml file containing HTML including a methods description.",
-                    "fa_icon": "fas fa-cog"
+                    "fa_icon": "fas fa-cog",
+                    "hidden": true
+                },
+                "multiqc_replace_names": {
+                    "type": "string",
+                    "description": "Optional two-column sample renaming file. First column a set of patterns, second column a set of corresponding replacements. Passed via MultiQC's `--replace-names` option.",
+                    "fa_icon": "far fa-file-code"
+                },
+                "multiqc_sample_names": {
+                    "type": "string",
+                    "description": "Optional TSV file with headers, passed to the MultiQC --sample_names argument.",
+                    "fa_icon": "far fa-file-code"
                 },
                 "validate_params": {
                     "type": "boolean",

@@ -8,3 +8,8 @@ testing*
 *.pyc
 null/
 .lineage/
+dataset/
+.devcontainer/dev/
+.vscode/
+.nf-test/
+.nf-test.log

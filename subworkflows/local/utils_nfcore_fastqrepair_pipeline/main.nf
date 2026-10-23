@@ -123,10 +123,17 @@ workflow PIPELINE_INITIALISATION {
         }
         .set { ch_samplesheet }
 
+    //
+    // Check that paired-end fastq files have the same file extensions
+    //
+    validateConcordantExtensionsInSamplesheet(ch_samplesheet)
+
     emit:
     samplesheet = ch_samplesheet
     versions    = ch_versions
 }
+
+
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -193,30 +200,58 @@ def validateInputSamplesheet(input) {
 
     return [ metas[0], fastqs ]
 }
+
+//
+// Same fastq files are not allowed to be analyzed multiple times in the same run
+//
+def validateConcordantExtensionsInSamplesheet(samplesheet) {
+    // Collect the sample IDs of problematic entries
+    def wrong_samples = samplesheet.filter { meta, fastq -> !meta.single_end && fastq[0] && fastq[1] && fastq[0].extension != fastq[1].extension }
+    wrong_samples.subscribe { meta, _fastq -> error("Please check input samplesheet -> Paired-end fastq files must have the same extension for ${meta.id}") }
+}
+
+//
+// Check if a fastq file is empty
+//
+def isFastqFileEmpty(Path fastqFilePath) {
+    if (fastqFilePath.toString().endsWith('.gz')) {
+        java.util.zip.GZIPInputStream gis = null
+        try{
+            gis = new java.util.zip.GZIPInputStream(java.nio.file.Files.newInputStream(fastqFilePath))
+            return gis.read() == -1
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading gzipped file: ${fastqFilePath}", e)
+        }
+    } else {
+        return java.nio.file.Files.size(fastqFilePath) == 0 || java.nio.file.Files.size(fastqFilePath) == -1
+    }
+}
+
 //
 // Generate methods description for MultiQC
 //
 def toolCitationText() {
-    // TODO nf-core: Optionally add in-text citation tools to this list.
     // Can use ternary operators to dynamically construct based conditions, e.g. params["run_xyz"] ? "Tool (Foo et al. 2023)" : "",
-    // Uncomment function in methodsDescriptionText to render in MultiQC report
     def citation_text = [
             "Tools used in the workflow included:",
-            "FastQC (Andrews 2010),",
-            "MultiQC (Ewels et al. 2016)",
-            "."
+            "The <a href='https://www.urbanophile.com/arenn/hacking/gzrt/gzrt.html' target='_blank'>gzip Recovery Toolkit</a>,",
+            "<a href='https://github.com/mazzalab/fastqwiper' target='_blank'>FastqWiper</a>,",
+            "<a href='https://sourceforge.net/projects/bbmap/' target='_blank'>BBMap</a>,",
+            "<a href='https://www.bioinformatics.babraham.ac.uk/projects/fastqc/' target='_blank'>FastQC</a> (Andrews 2010)",
+            "<a href='https://github.com/MultiQC/MultiQC' target='_blank'>MultiQC</a> (Ewels et al. 2016)",
         ].join(' ').trim()
 
     return citation_text
 }
 
 def toolBibliographyText() {
-    // TODO nf-core: Optionally add bibliographic entries to this list.
     // Can use ternary operators to dynamically construct based conditions, e.g. params["run_xyz"] ? "<li>Author (2023) Pub name, Journal, DOI</li>" : "",
-    // Uncomment function in methodsDescriptionText to render in MultiQC report
     def reference_text = [
-            "<li>Andrews S, (2010) FastQC, URL: https://www.bioinformatics.babraham.ac.uk/projects/fastqc/).</li>",
-            "<li>Ewels, P., Magnusson, M., Lundin, S., & Käller, M. (2016). MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics , 32(19), 3047–3048. doi: /10.1093/bioinformatics/btw354</li>"
+            "<li>Renn, A. M. (2013). The gzip Recovery Toolkit [Online]</li>",
+            "<li>MazzaLab, Tommaso Mazza, & Jose F Oviedo. (2025). mazzalab/fastqwiper: v1.1.5 (v1.1.5). Zenodo, https://doi.org/10.5281/zenodo.14774039</li>",
+            "<li>Bushnell B. (2024). BBMap [Online]</li>",
+            "<li>Andrews, S. (2010). FastQC: A Quality Control Tool for High Throughput Sequence Data [Online]</li>",
+            "<li>Ewels P, Magnusson M, Lundin S, Käller M. MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics. 2016 Oct 1;32(19):3047-8. doi: 10.1093/bioinformatics/btw354. Epub 2016 Jun 16. PubMed PMID: 27312411; PubMed Central PMCID: PMC5039924</li>"
         ].join(' ').trim()
 
     return reference_text
@@ -246,9 +281,9 @@ def methodsDescriptionText(mqc_methods_yaml) {
     meta["tool_citations"] = ""
     meta["tool_bibliography"] = ""
 
-    // TODO nf-core: Only uncomment below if logic in toolCitationText/toolBibliographyText has been filled!
-    // meta["tool_citations"] = toolCitationText().replaceAll(", \\.", ".").replaceAll("\\. \\.", ".").replaceAll(", \\.", ".")
-    // meta["tool_bibliography"] = toolBibliographyText()
+    // Only uncomment below if logic in toolCitationText/toolBibliographyText has been filled!
+    meta["tool_citations"] = toolCitationText().replaceAll(", \\.", ".").replaceAll("\\. \\.", ".").replaceAll(", \\.", ".")
+    meta["tool_bibliography"] = toolBibliographyText()
 
 
     def methods_text = mqc_methods_yaml.text

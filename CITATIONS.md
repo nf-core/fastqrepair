@@ -14,6 +14,18 @@
 
 > Andrews, S. (2010). FastQC: A Quality Control Tool for High Throughput Sequence Data [Online].
 
+- [gzrt](https://www.urbanophile.com/arenn/hacking/gzrt/gzrt.html)
+
+> Renn, A. M. (2013). The gzip Recovery Toolkit [Online].
+
+- [Wipertools](https://github.com/mazzalab/fastqwiper)
+
+> MazzaLab, Tommaso Mazza, & Jose F Oviedo. (2025). mazzalab/fastqwiper: v1.1.5 (v1.1.5). Zenodo. [https://doi.org/10.5281/zenodo.14774039](https://doi.org/10.5281/zenodo.14774039)
+
+- [BBMap](http://sourceforge.net/projects/bbmap/)
+
+> Bushnell B. (2024). BBMap [Online]
+
 - [MultiQC](https://pubmed.ncbi.nlm.nih.gov/27312411/)
 
 > Ewels P, Magnusson M, Lundin S, Käller M. MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics. 2016 Oct 1;32(19):3047-8. doi: 10.1093/bioinformatics/btw354. Epub 2016 Jun 16. PubMed PMID: 27312411; PubMed Central PMCID: PMC5039924.
