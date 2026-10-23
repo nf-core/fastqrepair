@@ -3,6 +3,7 @@
     IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
+include { FQ_LINT                 } from '../modules/nf-core/fq/lint/main'
 include { FASTQC                  } from '../modules/nf-core/fastqc/main'
 include { MULTIQC                 } from '../modules/nf-core/multiqc/main'
 include { GZRT                    } from '../modules/nf-core/gzrt/main'
@@ -36,9 +37,51 @@ workflow FASTQREPAIR {
 
     ch_final = channel.empty()      // channel: repaired fastq files
 
+    // ch_samples_need_repair: samples that need to go through the repair machinery
+    //                         (GZRT -> wipertools -> optional BBMAP_REPAIR).
+    // ch_samples_clean:       samples that passed fq-lint untouched. They bypass
+    //                         every repair step and are merged back into
+    //                         ch_final right before FASTQC/MultiQC, so that they
+    //                         still show up in the run outputs instead of being
+    //                         silently dropped.
+    ch_samples_need_repair = ch_samplesheet
+    ch_samples_clean = channel.empty()
+
+    if (!params.skip_fq_lint) {
+        FQ_LINT(ch_samplesheet)
+        ch_versions = ch_versions.mix(FQ_LINT.out.versions.first())
+
+        // NOTE ON FRAGILITY:
+        // The fq-lint module always exits 0 (the module runs the command as
+        // `fq lint ... || true`), so we can't rely on the process exit
+        // status to know whether a sample failed linting. Instead we grep
+        // the textual log for known markers: the presence of 'ERROR', the
+        // phrase 'read 0 records', or the absence of the closing
+        // "fq-lint end" banner. If fq-lint ever exposes a
+        // proper machine-readable exit status or structured report, switch
+        // to that instead of string matching.
+        FQ_LINT.out.lint
+            .map { meta, it -> [meta, file(it).text] }
+            .branch { _meta, text ->
+                failed: text.contains('ERROR') || text.contains('read 0 records') || !text.contains('fq-lint end')
+                passed: true
+            }
+            .set { ch_lint_status }
+
+        ch_samplesheet
+            .join(ch_lint_status.failed)
+            .map { meta, it, _text -> [meta, it] }
+            .set { ch_samples_need_repair }
+
+        ch_samplesheet
+            .join(ch_lint_status.passed)
+            .map { meta, it, _text -> [meta, it] }
+            .set { ch_samples_clean }
+    }
+
     // branch .gz and non gz files
     ch_fastq_ext = channel.empty()
-    ch_samplesheet
+    ch_samples_need_repair
     | branch { _map, fq ->
         gz_files: fq.first().getExtension() == 'gz'
         non_gz_files: true }
@@ -66,7 +109,7 @@ workflow FASTQREPAIR {
     }
 
     // If ch_tobewiped_fastq has a size < ch_samplesheet but > zero, then some files were empty and we need to log.warn them
-    ch_samplesheet.map { meta, _fastq -> meta.id }
+    ch_samples_need_repair.map { meta, _fastq -> meta.id }
         .collect()
         .set { all_ids }
 
@@ -116,6 +159,11 @@ workflow FASTQREPAIR {
     } else {
         ch_final = ch_repaired_fastq_paired_end.concat(ch_repaired_fastq.single_end)
     }
+
+    // Merge back samples that passed fq-lint untouched, so that clean
+    // samples still get QC'd and reported even though they skipped every
+    // repair step.
+    ch_final = ch_final.concat(ch_samples_clean)
 
     //
     // Assess QC of all fastq files (both single and paired end)
