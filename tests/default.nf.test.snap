@@ -96,7 +96,7 @@
             [
                 "fastqc-status-check-heatmap.txt:md5,21297d04127784c119fb9907501b9589",
                 "fastqc_adapter_content_plot.txt:md5,000198f0cff3e600d29abc22fc5738da",
-                "fastqc_overrepresented_sequences_plot.txt:md5,b084a757bcf5ac9694292356ad5e5750",
+                "fastqc_overrepresented_sequences_plot.txt:md5,b47773a2122a94150390d844b17a0f2a",
                 "fastqc_per_base_n_content_plot.txt:md5,34061ce51018c73217992da5d152d80d",
                 "fastqc_per_base_sequence_quality_plot.txt:md5,1e82c9b9551b65cba078ecc77d9b5b3d",
                 "fastqc_per_sequence_gc_content_plot_Counts.txt:md5,236df075284db51f90e152f820fb1825",
@@ -106,7 +106,7 @@
                 "fastqc_sequence_duplication_levels_plot.txt:md5,a02844a6418071c3ce750ae463c0a425",
                 "fastqc_sequence_length_distribution_plot.txt:md5,205441c4aac314f39401bb4334f2cb4c",
                 "multiqc_citations.txt:md5,4c806e63a283ec1b7e78cdae3a923d4f",
-                "multiqc_fastqc.txt:md5,4b4f368b665f8fa25b0f0f9c76319323",
+                "multiqc_fastqc.txt:md5,23c2d7cb85a5f7c61a47d3f2cb66327a",
                 "multiqc_general_stats.txt:md5,0010a3fff3aaa3a78d6f86c5e0f43d92",
                 "test_30reads_2.fastq.gz:md5,688d1247ff20870b1f30cd39976007ba",
                 "test_30reads_2.report:md5,66c4833c1d7d2a94a34a786873869c7a"
