@@ -5,11 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v[1.1.2](https://github.com/nf-core/fastqrepair/releases/tag/1.1.2) - Kigali SkyBlue [23/10/2026]
 
-nf-core/tools v4.1.0 update
+nf-core/tools v4.2.1 update
 
 ### `Changed`
 
 - [PR #55](https://github.com/nf-core/fastqrepair/pull/55) - Template update for nf-core/tools v4.1.0
+- [PR #60](https://github.com/nf-core/fastqrepair/pull/60) - Template update for nf-core/tools v4.2.1. `nf-schema` bumped to `2.7.3`; the new `manifest.diagram` field points to the workflow diagram
 - Replaced `fix_linting.yml` with `fix-linting.yml`, a call to the shared `nf-core/actions` reusable workflow, and moved `seqeralabs/action-tower-launch` to `v2.4.0` (automated patch PRs [#56](https://github.com/nf-core/fastqrepair/pull/56) and [#57](https://github.com/nf-core/fastqrepair/pull/57))
 
 ### `Fixed`

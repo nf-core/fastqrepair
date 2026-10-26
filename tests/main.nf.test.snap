@@ -8,7 +8,7 @@
             "test_30reads_2.report:md5,66c4833c1d7d2a94a34a786873869c7a",
             {
                 "FASTQC": {
-                    "fastqc": "0.12.1"
+                    "fastqc": "0.13.0"
                 },
                 "GZRT": {
                     "gzrt": 0.9
