@@ -1,0 +1,39 @@
+// Once you have added the required tests, please run the following command to build this file:
+// nf-core subworkflows test fastq_repair_wipertools
+nextflow_workflow {
+
+    name "Test Subworkflow FASTQ_REPAIR_WIPERTOOLS"
+    script "../main.nf"
+    workflow "FASTQ_REPAIR_WIPERTOOLS"
+
+    tag "subworkflows"
+    tag "subworkflows_"
+    tag "subworkflows/fastq_repair_wipertools"
+    tag "wipertools"
+    tag "wipertools/fastqwiper"
+    tag "wipertools/fastqscatter"
+    tag "wipertools/fastqgather"
+    tag "wipertools/reportgather"
+
+    test("sarscov2_illumina_paired - fastq_gz") {
+
+        when {
+            workflow {
+                """
+                input[0] = channel.of([
+                    [ id:'test', single_end:false ], // meta map
+                    [file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/fastq/test_1.fastq.gz', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'genomics/sarscov2/illumina/fastq/test_2.fastq.gz', checkIfExists: true)]
+                    ])
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success},
+                { assert snapshot(workflow.out).match()}
+            )
+        }
+    }
+}

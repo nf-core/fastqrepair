@@ -1,0 +1,32 @@
+{
+    "30reads_final": {
+        "content": [
+            [
+                "test_30reads_2.fastq.gz:md5,688d1247ff20870b1f30cd39976007ba",
+                "test_30reads_2.report:md5,66c4833c1d7d2a94a34a786873869c7a"
+            ],
+            "test_30reads_2.report:md5,66c4833c1d7d2a94a34a786873869c7a",
+            {
+                "FASTQC": {
+                    "fastqc": "0.12.1"
+                },
+                "GZRT": {
+                    "gzrt": 0.9
+                },
+                "WIPERTOOLS_FASTQSCATTER": {
+                    "wipertools fastqscatter": "1.0.3"
+                },
+                "Workflow": {
+                    "nf-core/fastqrepair": "v1.1.2"
+                }
+            },
+            true,
+            false
+        ],
+        "timestamp": "2026-08-09T12:12:14.318955262",
+        "meta": {
+            "nf-test": "0.9.4",
+            "nextflow": "25.10.4"
+        }
+    }
+}
