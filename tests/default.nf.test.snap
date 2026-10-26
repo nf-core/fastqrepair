@@ -3,7 +3,7 @@
         "content": [
             {
                 "FASTQC": {
-                    "fastqc": "0.12.1"
+                    "fastqc": "0.13.0"
                 },
                 "GZRT": {
                     "gzrt": 0.9
