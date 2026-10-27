@@ -49,12 +49,13 @@ workflow FASTQREPAIR {
     if (!params.skip_fq_lint) {
         FQ_LINT ( ch_samplesheet )
 
-        // A sample whose lint could not run has no report (the task is ignored, see conf/modules.config)
-        // and is repaired like a sample whose lint failed
+        // fq lint exits with an error on a file with problems, and the task is then ignored (see
+        // conf/modules.config) and has no report. A sample without a report, as well as one whose
+        // report does not look clean, did not pass and goes through the repair
         ch_lint_status = ch_samplesheet
             .join(FQ_LINT.out.lint, remainder: true)
             .map { meta, fastqs, report ->
-                [ meta, fastqs, report == null ? 'not available' : (fqLintPassed(report.text) ? 'passed' : 'failed') ]
+                [ meta, fastqs, report != null && fqLintPassed(report.text) ? 'passed' : 'failed' ]
             }
 
         ch_lint_status

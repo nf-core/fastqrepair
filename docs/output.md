@@ -40,7 +40,7 @@ Unless `--skip_fq_lint` is used, the input reads are checked with [fq lint](http
 <summary>Output files</summary>
 
 - `QC/fq_lint/`
-  - `fq_lint_status_mqc.tsv`: for each sample, whether it `passed` or `failed` fq lint (`not available` if the check could not run) and whether the repair was `skipped` or `run`. The table is also shown in the MultiQC report.
+  - `fq_lint_status_mqc.tsv`: for each sample, whether it `passed` or `failed` fq lint (also `failed` if the check could not run) and whether the repair was `skipped` or `run`. The table is also shown in the MultiQC report.
 
 </details>
 

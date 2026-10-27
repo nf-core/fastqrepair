@@ -228,11 +228,13 @@ def isFastqFileEmpty(Path fastqFilePath) {
 }
 
 //
-// Check if the log written by `fq lint --lint-mode log` describes a clean file
+// Check if the log written by `fq lint` describes a clean file
 //
-// fq lint has no machine-readable report, so this matches its log text and is
-// tied to the fq version (0.12.x): a clean log starts with "fq-lint start",
-// reports the records it read and ends with "fq-lint end", without any ERROR line.
+// fq lint exits with an error on a file with problems, so a log is normally only
+// there for a clean file. It has no machine-readable report though, so this also
+// matches its log text and is tied to the fq version (0.12.x): a clean log starts
+// with "fq-lint start", reports the records it read and ends with "fq-lint end",
+// without any ERROR line.
 // The check is deliberately one-sided: whatever does not look clean (errors,
 // no end banner, no records, a different log format) counts as NOT clean, so an
 // unexpected log makes a sample go through the repair as before instead of
