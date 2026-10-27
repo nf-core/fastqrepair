@@ -40,6 +40,20 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 > [!WARNING]
 > Different file extensions are not allowed _in the same row_, i.e., in the same paired-end sample (e.g., `mysampleA,sample_R1.fastq.gz,sample_R2.fastq`)
 
+## Skipping the repair of clean samples
+
+By default, the reads are first checked with [fq lint](https://github.com/stjude-rust-labs/fq) and the samples that pass are not repaired, which saves time when you run the pipeline over many files that are mostly fine. They are copied to the output folder (compressed, if they were not) with the same names as the repaired reads, and they still get a FastQC and a MultiQC report. Use `--skip_fq_lint` to repair all the samples regardless. See the [output documentation](output.md#fq-lint) for details.
+
+## Using the repaired reads as input of another pipeline
+
+The pipeline writes `repaired_samplesheet.csv` to the output folder. It lists the repaired (and clean) samples in the samplesheet format of nf-core pipelines, so it can be given as `--input` to a downstream pipeline:
+
+```bash
+nextflow run nf-core/rnaseq --input ./results/repaired_samplesheet.csv --outdir ./rnaseq_results -profile docker
+```
+
+Downstream pipelines may need extra columns (e.g. `strandedness` in nf-core/rnaseq) that you have to add to the file.
+
 ## Running the pipeline
 
 The typical command for running the pipeline is as follows:

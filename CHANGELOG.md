@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 nf-core/tools v4.2.1 update
 
+### `Added`
+
+- [#38](https://github.com/nf-core/fastqrepair/issues/38) - The input reads are checked with [fq lint](https://github.com/stjude-rust-labs/fq) first, and the samples that pass are not repaired: their reads are copied (and compressed, if needed) to `repaired/` with the same names as repaired reads, and they still get FastQC and MultiQC reports. A sample is only skipped if its lint log looks clean; if lint fails or cannot run, it is repaired as before. The result of each sample is shown in a MultiQC table and written to `QC/fq_lint/fq_lint_status_mqc.tsv`. Use `--skip_fq_lint` to repair all the samples. Based on the work of [@fhausmann](https://github.com/fhausmann) in [PR #21](https://github.com/nf-core/fastqrepair/pull/21)
+- [#36](https://github.com/nf-core/fastqrepair/issues/36) - `repaired_samplesheet.csv` is written to the output folder: a samplesheet of the reads in `repaired/` (single- and paired-end), to be used as `--input` of a downstream pipeline
+
 ### `Changed`
 
 - [PR #55](https://github.com/nf-core/fastqrepair/pull/55) - Template update for nf-core/tools v4.1.0
