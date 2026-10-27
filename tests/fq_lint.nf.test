@@ -1,0 +1,86 @@
+nextflow_pipeline {
+
+    name "Test the fq lint pre-check and the repaired samplesheet"
+    script "../main.nf"
+
+    tag "pipeline"
+    tag "fq_lint"
+
+    // Runs the real fq lint on tiny files: two clean samples (one paired-end, one single-end) and one
+    // single-end sample with a read whose quality line is shorter than its sequence. It fails if a new
+    // fq version changes the log format that fqLintPassed() relies on (a clean sample would then be repaired).
+    test("clean samples skip the repair, the broken sample is repaired") {
+
+        when {
+            params {
+                input  = "${projectDir}/tests/fixtures/samplesheet_fq_lint.csv"
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            def repaired = "$outputDir/repaired"
+            def lint_status = path("$outputDir/QC/fq_lint/fq_lint_status_mqc.tsv").readLines()
+
+            assertAll(
+                { assert workflow.success },
+                // pipeline versions file from which the Nextflow version is removed, because the pipeline is tested on multiple Nextflow versions
+                { assert snapshot(removeNextflowVersion("$outputDir/pipeline_info/nf_core_fastqrepair_software_mqc_versions.yml")).match("versions") },
+
+                // fq lint result of each sample, also shown in MultiQC
+                { assert lint_status.contains("clean_pe\tpassed\tskipped") },
+                { assert lint_status.contains("clean_se\tpassed\tskipped") },
+                { assert lint_status.contains("broken_se\tfailed\trun") },
+                { assert path("$outputDir/QC/multiqc/multiqc_report.html").text.contains("fq lint") },
+
+                // clean samples are in the output with the names of the repaired reads, but were not repaired (no wiper report)
+                { assert file("$repaired/clean_pe_1.fastq.gz").exists() },
+                { assert file("$repaired/clean_pe_2.fastq.gz").exists() },
+                { assert file("$repaired/clean_se.fastq.gz").exists() },
+                { assert !file("$repaired/clean_pe_1.report").exists() },
+                { assert !file("$repaired/clean_se.report").exists() },
+
+                // the broken sample took the repair path
+                { assert file("$repaired/broken_se.fastq.gz").exists() },
+                { assert file("$repaired/broken_se.report").exists() },
+
+                // all of them get a QC
+                { assert file("$outputDir/QC/fastqc/clean_pe_1_fastqc.html").exists() },
+                { assert file("$outputDir/QC/fastqc/clean_se_fastqc.html").exists() },
+                { assert file("$outputDir/QC/fastqc/broken_se_fastqc.html").exists() },
+
+                // samplesheet to use as --input of a downstream pipeline
+                { assert path("$outputDir/repaired_samplesheet.csv").readLines() == [
+                    "sample,fastq_1,fastq_2",
+                    "broken_se,${repaired}/broken_se.fastq.gz,",
+                    "clean_pe,${repaired}/clean_pe_1.fastq.gz,${repaired}/clean_pe_2.fastq.gz",
+                    "clean_se,${repaired}/clean_se.fastq.gz,"
+                ] }
+            )
+        }
+    }
+
+    test("skip_fq_lint repairs all the samples and writes no lint status") {
+
+        when {
+            params {
+                input         = "${projectDir}/tests/fixtures/samplesheet_fq_lint.csv"
+                outdir        = "$outputDir"
+                skip_fq_lint  = true
+            }
+        }
+
+        then {
+            def repaired = "$outputDir/repaired"
+
+            assertAll(
+                { assert workflow.success },
+                { assert !file("$outputDir/QC/fq_lint").exists() },
+                { assert file("$repaired/clean_se.fastq.gz").exists() },
+                { assert file("$repaired/clean_se.report").exists() },
+                { assert file("$repaired/broken_se.report").exists() },
+                { assert path("$outputDir/repaired_samplesheet.csv").readLines().size() == 4 }
+            )
+        }
+    }
+}

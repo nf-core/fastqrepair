@@ -5,6 +5,9 @@
                 "FASTQC": {
                     "fastqc": "0.13.0"
                 },
+                "FQ_LINT": {
+                    "fq": "0.12.0"
+                },
                 "GZRT": {
                     "gzrt": 0.9
                 },
@@ -20,6 +23,8 @@
                 "QC/fastqc",
                 "QC/fastqc/test_30reads_2_fastqc.html",
                 "QC/fastqc/test_30reads_2_fastqc.zip",
+                "QC/fq_lint",
+                "QC/fq_lint/fq_lint_status_mqc.tsv",
                 "QC/multiqc",
                 "QC/multiqc/multiqc_data",
                 "QC/multiqc/multiqc_data/fastqc-status-check-heatmap.txt",
@@ -91,7 +96,8 @@
                 "pipeline_info/nf_core_fastqrepair_software_mqc_versions.yml",
                 "repaired",
                 "repaired/test_30reads_2.fastq.gz",
-                "repaired/test_30reads_2.report"
+                "repaired/test_30reads_2.report",
+                "repaired_samplesheet.csv"
             ],
             [
                 "fastqc-status-check-heatmap.txt:md5,21297d04127784c119fb9907501b9589",

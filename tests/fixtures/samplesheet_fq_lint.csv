@@ -1,0 +1,4 @@
+sample,fastq_1,fastq_2
+clean_pe,clean_pe_1.fastq,clean_pe_2.fastq
+clean_se,clean_se.fastq,
+broken_se,broken_se.fastq,
