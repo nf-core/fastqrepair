@@ -15,6 +15,11 @@
                         "git_sha": "18eb358065b06f2d3419e37383b002fe7db3da02",
                         "installed_by": ["modules"]
                     },
+                    "fq/lint": {
+                        "branch": "master",
+                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
+                        "installed_by": ["modules"]
+                    },
                     "gzrt": {
                         "branch": "master",
                         "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",

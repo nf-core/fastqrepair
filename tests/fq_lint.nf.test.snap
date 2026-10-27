@@ -1,0 +1,25 @@
+{
+    "versions": {
+        "content": [
+            {
+                "FASTQC": {
+                    "fastqc": "0.13.0"
+                },
+                "FQ_LINT": {
+                    "fq": "0.12.0"
+                },
+                "WIPERTOOLS_FASTQSCATTER": {
+                    "wipertools fastqscatter": "1.0.3"
+                },
+                "Workflow": {
+                    "nf-core/fastqrepair": "v1.1.2"
+                }
+            }
+        ],
+        "timestamp": "2026-10-27T22:00:00.000000000",
+        "meta": {
+            "nf-test": "0.9.4",
+            "nextflow": "25.10.4"
+        }
+    }
+}

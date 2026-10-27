@@ -59,6 +59,13 @@
                     "description": "This option tells the pipeline to skip the BBMap re-pair step.",
                     "fa_icon": "fas fa-puzzle-piece"
                 },
+                "skip_fq_lint": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Skip the fq lint pre-check and repair all the samples.",
+                    "help_text": "By default, the input files are checked with `fq lint` and the samples that pass are not repaired: they are only copied (and compressed, if needed) to the output folder, where they are named like the repaired reads. Use this option to repair all the samples regardless.",
+                    "fa_icon": "fas fa-puzzle-piece"
+                },
                 "publish_all_tools": {
                     "type": "boolean",
                     "default": false,

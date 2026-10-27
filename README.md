@@ -25,11 +25,12 @@
 
 ![pipeline_diagram](docs/images/fastqrepair-flow-diagram-v1.0.png)
 
-1. Recover reads from corrupted fastq.gz file ([`gzrt`](https://github.com/arenn/gzrt))
-2. Make recovered reads well-formed ([`wipertools`](https://github.com/mazzalab/fastqwiper))
-3. Re-pair reads ([`bbmap/repair.sh`](https://sourceforge.net/projects/bbmap/))
-4. Check QC of recovered reads ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))
-5. Aggregate and report QC ([`MultiQC`](https://github.com/MultiQC/MultiQC))
+1. Check the reads and skip the repair of the clean samples ([`fq lint`](https://github.com/stjude-rust-labs/fq))
+2. Recover reads from corrupted fastq.gz file ([`gzrt`](https://github.com/arenn/gzrt))
+3. Make recovered reads well-formed ([`wipertools`](https://github.com/mazzalab/fastqwiper))
+4. Re-pair reads ([`bbmap/repair.sh`](https://sourceforge.net/projects/bbmap/))
+5. Check QC of recovered reads ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))
+6. Aggregate and report QC ([`MultiQC`](https://github.com/MultiQC/MultiQC))
 
 ## Usage
 

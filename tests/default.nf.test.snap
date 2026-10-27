@@ -5,6 +5,9 @@
                 "FASTQC": {
                     "fastqc": "0.13.0"
                 },
+                "FQ_LINT": {
+                    "fq": "0.12.0"
+                },
                 "GZRT": {
                     "gzrt": 0.9
                 },
@@ -20,6 +23,8 @@
                 "QC/fastqc",
                 "QC/fastqc/test_30reads_2_fastqc.html",
                 "QC/fastqc/test_30reads_2_fastqc.zip",
+                "QC/fq_lint",
+                "QC/fq_lint/fq_lint_status_mqc.tsv",
                 "QC/multiqc",
                 "QC/multiqc/multiqc_data",
                 "QC/multiqc/multiqc_data/fastqc-status-check-heatmap.txt",
@@ -40,6 +45,7 @@
                 "QC/multiqc/multiqc_data/multiqc_citations.txt",
                 "QC/multiqc/multiqc_data/multiqc_data.json",
                 "QC/multiqc/multiqc_data/multiqc_fastqc.txt",
+                "QC/multiqc/multiqc_data/multiqc_fq_lint_status.txt",
                 "QC/multiqc/multiqc_data/multiqc_general_stats.txt",
                 "QC/multiqc/multiqc_data/multiqc_software_versions.txt",
                 "QC/multiqc/multiqc_data/multiqc_sources.txt",
@@ -58,6 +64,7 @@
                 "QC/multiqc/multiqc_plots/pdf/fastqc_sequence_duplication_levels_plot.pdf",
                 "QC/multiqc/multiqc_plots/pdf/fastqc_sequence_length_distribution_plot.pdf",
                 "QC/multiqc/multiqc_plots/pdf/fastqc_top_overrepresented_sequences_table.pdf",
+                "QC/multiqc/multiqc_plots/pdf/fq_lint_status.pdf",
                 "QC/multiqc/multiqc_plots/png",
                 "QC/multiqc/multiqc_plots/png/fastqc-status-check-heatmap.png",
                 "QC/multiqc/multiqc_plots/png/fastqc_adapter_content_plot.png",
@@ -72,6 +79,7 @@
                 "QC/multiqc/multiqc_plots/png/fastqc_sequence_duplication_levels_plot.png",
                 "QC/multiqc/multiqc_plots/png/fastqc_sequence_length_distribution_plot.png",
                 "QC/multiqc/multiqc_plots/png/fastqc_top_overrepresented_sequences_table.png",
+                "QC/multiqc/multiqc_plots/png/fq_lint_status.png",
                 "QC/multiqc/multiqc_plots/svg",
                 "QC/multiqc/multiqc_plots/svg/fastqc-status-check-heatmap.svg",
                 "QC/multiqc/multiqc_plots/svg/fastqc_adapter_content_plot.svg",
@@ -86,14 +94,17 @@
                 "QC/multiqc/multiqc_plots/svg/fastqc_sequence_duplication_levels_plot.svg",
                 "QC/multiqc/multiqc_plots/svg/fastqc_sequence_length_distribution_plot.svg",
                 "QC/multiqc/multiqc_plots/svg/fastqc_top_overrepresented_sequences_table.svg",
+                "QC/multiqc/multiqc_plots/svg/fq_lint_status.svg",
                 "QC/multiqc/multiqc_report.html",
                 "pipeline_info",
                 "pipeline_info/nf_core_fastqrepair_software_mqc_versions.yml",
                 "repaired",
                 "repaired/test_30reads_2.fastq.gz",
-                "repaired/test_30reads_2.report"
+                "repaired/test_30reads_2.report",
+                "repaired_samplesheet.csv"
             ],
             [
+                "fq_lint_status_mqc.tsv:md5,b1ff3ba883a0ba94f774f30fd745a38e",
                 "fastqc-status-check-heatmap.txt:md5,21297d04127784c119fb9907501b9589",
                 "fastqc_adapter_content_plot.txt:md5,000198f0cff3e600d29abc22fc5738da",
                 "fastqc_overrepresented_sequences_plot.txt:md5,b47773a2122a94150390d844b17a0f2a",
@@ -107,6 +118,7 @@
                 "fastqc_sequence_length_distribution_plot.txt:md5,205441c4aac314f39401bb4334f2cb4c",
                 "multiqc_citations.txt:md5,4c806e63a283ec1b7e78cdae3a923d4f",
                 "multiqc_fastqc.txt:md5,23c2d7cb85a5f7c61a47d3f2cb66327a",
+                "multiqc_fq_lint_status.txt:md5,40845e40b26f43e74398ffbd699184f0",
                 "multiqc_general_stats.txt:md5,0010a3fff3aaa3a78d6f86c5e0f43d92",
                 "test_30reads_2.fastq.gz:md5,688d1247ff20870b1f30cd39976007ba",
                 "test_30reads_2.report:md5,66c4833c1d7d2a94a34a786873869c7a"
