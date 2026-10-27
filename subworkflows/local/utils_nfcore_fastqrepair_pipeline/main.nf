@@ -228,12 +228,29 @@ def isFastqFileEmpty(Path fastqFilePath) {
 }
 
 //
+// Check if the log written by `fq lint --lint-mode log` describes a clean file
+//
+// fq lint has no machine-readable report, so this matches its log text and is
+// tied to the fq version (0.12.x): a clean log starts with "fq-lint start",
+// reports the records it read and ends with "fq-lint end", without any ERROR line.
+// The check is deliberately one-sided: whatever does not look clean (errors,
+// no end banner, no records, a different log format) counts as NOT clean, so an
+// unexpected log makes a sample go through the repair as before instead of
+// being skipped. tests/fq_lint.nf.test runs a clean and a corrupt file through
+// the real tool and fails if a new fq version changes this wording.
+//
+def fqLintPassed(String report) {
+    return report.contains('fq-lint end') && !report.contains('ERROR') && !report.contains('read 0 records')
+}
+
+//
 // Generate methods description for MultiQC
 //
 def toolCitationText() {
     // Can use ternary operators to dynamically construct based conditions, e.g. params["run_xyz"] ? "Tool (Foo et al. 2023)" : "",
     def citation_text = [
             "Tools used in the workflow included:",
+            params.skip_fq_lint ? "" : "<a href='https://github.com/stjude-rust-labs/fq' target='_blank'>fq</a>,",
             "The <a href='https://www.urbanophile.com/arenn/hacking/gzrt/gzrt.html' target='_blank'>gzip Recovery Toolkit</a>,",
             "<a href='https://github.com/mazzalab/fastqwiper' target='_blank'>FastqWiper</a>,",
             "<a href='https://sourceforge.net/projects/bbmap/' target='_blank'>BBMap</a>,",
@@ -247,6 +264,7 @@ def toolCitationText() {
 def toolBibliographyText() {
     // Can use ternary operators to dynamically construct based conditions, e.g. params["run_xyz"] ? "<li>Author (2023) Pub name, Journal, DOI</li>" : "",
     def reference_text = [
+            params.skip_fq_lint ? "" : "<li>St. Jude Rust Labs. fq: a library to generate and validate FASTQ file pairs [Online]. https://github.com/stjude-rust-labs/fq</li>",
             "<li>Renn, A. M. (2013). The gzip Recovery Toolkit [Online]</li>",
             "<li>MazzaLab, Tommaso Mazza, & Jose F Oviedo. (2025). mazzalab/fastqwiper: v1.1.5 (v1.1.5). Zenodo, https://doi.org/10.5281/zenodo.14774039</li>",
             "<li>Bushnell B. (2024). BBMap [Online]</li>",
