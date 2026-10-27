@@ -13,7 +13,18 @@ nextflow_pipeline {
 
         when {
             params {
-                input  = "${projectDir}/tests/fixtures/samplesheet_fq_lint.csv"
+                // the file paths of a samplesheet are checked from the launch directory, so it needs absolute paths
+                def fixtures = "${projectDir}/tests/fixtures"
+                def samplesheet = File.createTempFile("samplesheet_fq_lint", ".csv")
+                samplesheet.deleteOnExit()
+                samplesheet.text = [
+                    "sample,fastq_1,fastq_2",
+                    "clean_pe,${fixtures}/clean_pe_1.fastq,${fixtures}/clean_pe_2.fastq",
+                    "clean_se,${fixtures}/clean_se.fastq,",
+                    "broken_se,${fixtures}/broken_se.fastq,"
+                ].join("\n") + "\n"
+
+                input  = samplesheet.absolutePath
                 outdir = "$outputDir"
             }
         }
@@ -64,7 +75,17 @@ nextflow_pipeline {
 
         when {
             params {
-                input         = "${projectDir}/tests/fixtures/samplesheet_fq_lint.csv"
+                def fixtures = "${projectDir}/tests/fixtures"
+                def samplesheet = File.createTempFile("samplesheet_fq_lint", ".csv")
+                samplesheet.deleteOnExit()
+                samplesheet.text = [
+                    "sample,fastq_1,fastq_2",
+                    "clean_pe,${fixtures}/clean_pe_1.fastq,${fixtures}/clean_pe_2.fastq",
+                    "clean_se,${fixtures}/clean_se.fastq,",
+                    "broken_se,${fixtures}/broken_se.fastq,"
+                ].join("\n") + "\n"
+
+                input         = samplesheet.absolutePath
                 outdir        = "$outputDir"
                 skip_fq_lint  = true
             }
