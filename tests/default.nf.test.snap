@@ -118,7 +118,7 @@
                 "fastqc_sequence_length_distribution_plot.txt:md5,205441c4aac314f39401bb4334f2cb4c",
                 "multiqc_citations.txt:md5,4c806e63a283ec1b7e78cdae3a923d4f",
                 "multiqc_fastqc.txt:md5,23c2d7cb85a5f7c61a47d3f2cb66327a",
-                "multiqc_fq_lint_status.txt:md5,536943d0ffbb44f8d3dc65a52ae6e0dd",
+                "multiqc_fq_lint_status.txt:md5,40845e40b26f43e74398ffbd699184f0",
                 "multiqc_general_stats.txt:md5,0010a3fff3aaa3a78d6f86c5e0f43d92",
                 "test_30reads_2.fastq.gz:md5,688d1247ff20870b1f30cd39976007ba",
                 "test_30reads_2.report:md5,66c4833c1d7d2a94a34a786873869c7a"

@@ -163,23 +163,25 @@ workflow FASTQREPAIR {
     //
     // fq lint status of each sample, published and shown in MultiQC
     //
-    ch_fq_lint_table = ch_lint_status
-        .map { meta, _fastqs, status -> "${meta.id}\t${status}\t${status == 'passed' ? 'skipped' : 'run'}" }
-        .collectFile(
-            name: 'fq_lint_status_mqc.tsv',
-            storeDir: "${outdir}/QC/fq_lint",
-            seed: [
-                "# id: 'fq_lint_status'",
-                "# section_name: 'fq lint'",
-                "# description: 'Result of the fq lint pre-check of the input files. The repair is skipped for the samples that pass.'",
-                "# format: 'tsv'",
-                "# plot_type: 'table'",
-                "Sample\tfq lint\tRepair",
-            ].join("\n"),
-            sort: true,
-            newLine: true
-        )
-    ch_multiqc_files = ch_multiqc_files.mix(ch_fq_lint_table)
+    if (!params.skip_fq_lint) {
+        ch_fq_lint_table = ch_lint_status
+            .map { meta, _fastqs, status -> "${meta.id}\t${status}\t${status == 'passed' ? 'skipped' : 'run'}" }
+            .collectFile(
+                name: 'fq_lint_status_mqc.tsv',
+                storeDir: "${outdir}/QC/fq_lint",
+                seed: [
+                    "# id: 'fq_lint_status'",
+                    "# section_name: 'fq lint'",
+                    "# description: 'Result of the fq lint pre-check of the input files. The repair is skipped for the samples that pass.'",
+                    "# format: 'tsv'",
+                    "# plot_type: 'table'",
+                    "Sample\tfq lint\tRepair",
+                ].join("\n"),
+                sort: true,
+                newLine: true
+            )
+        ch_multiqc_files = ch_multiqc_files.mix(ch_fq_lint_table)
+    }
 
     //
     // Samplesheet of the reads in <outdir>/repaired, to be used as --input of a downstream pipeline.
