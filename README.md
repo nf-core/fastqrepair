@@ -11,7 +11,7 @@
 [![nf-test](https://img.shields.io/badge/unit_tests-nf--test-337ab7.svg)](https://www.nf-test.com)
 
 [![Nextflow](https://img.shields.io/badge/version-%E2%89%A525.10.4-green?style=flat&logo=nextflow&logoColor=white&color=%230DC09D&link=https%3A%2F%2Fnextflow.io)](https://www.nextflow.io/)
-[![nf-core template version](https://img.shields.io/badge/nf--core_template-4.0.3-green?style=flat&logo=nfcore&logoColor=white&color=%2324B064&link=https%3A%2F%2Fnf-co.re)](https://github.com/nf-core/tools/releases/tag/4.0.3)
+[![nf-core template version](https://img.shields.io/badge/nf--core_template-4.2.1-green?style=flat&logo=nfcore&logoColor=white&color=%2324B064&link=https%3A%2F%2Fnf-co.re)](https://github.com/nf-core/tools/releases/tag/4.2.1)
 [![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)
@@ -25,11 +25,12 @@
 
 ![pipeline_diagram](docs/images/fastqrepair-flow-diagram-v1.0.png)
 
-1. Recover reads from corrupted fastq.gz file ([`gzrt`](https://github.com/arenn/gzrt))
-2. Make recovered reads well-formed ([`wipertools`](https://github.com/mazzalab/fastqwiper))
-3. Re-pair reads ([`bbmap/repair.sh`](https://sourceforge.net/projects/bbmap/))
-4. Check QC of recovered reads ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))
-5. Aggregate and report QC ([`MultiQC`](https://github.com/MultiQC/MultiQC))
+1. Check the reads and skip the repair of the clean samples ([`fq lint`](https://github.com/stjude-rust-labs/fq))
+2. Recover reads from corrupted fastq.gz file ([`gzrt`](https://github.com/arenn/gzrt))
+3. Make recovered reads well-formed ([`wipertools`](https://github.com/mazzalab/fastqwiper))
+4. Re-pair reads ([`bbmap/repair.sh`](https://sourceforge.net/projects/bbmap/))
+5. Check QC of recovered reads ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))
+6. Aggregate and report QC ([`MultiQC`](https://github.com/MultiQC/MultiQC))
 
 ## Usage
 

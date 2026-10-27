@@ -3,6 +3,8 @@
     IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
+include { FQ_LINT                 } from '../modules/nf-core/fq/lint/main'
+include { FASTQ_PASSTHROUGH       } from '../modules/local/fastq_passthrough/main'
 include { FASTQC                  } from '../modules/nf-core/fastqc/main'
 include { MULTIQC                 } from '../modules/nf-core/multiqc/main'
 include { GZRT                    } from '../modules/nf-core/gzrt/main'
@@ -13,6 +15,7 @@ include { paramsSummaryMultiqc    } from '../subworkflows/nf-core/utils_nfcore_p
 include { softwareVersionsToYAML  } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText  } from '../subworkflows/local/utils_nfcore_fastqrepair_pipeline'
 include { isFastqFileEmpty        } from '../subworkflows/local/utils_nfcore_fastqrepair_pipeline'
+include { fqLintPassed            } from '../subworkflows/local/utils_nfcore_fastqrepair_pipeline'
 
 
 /*
@@ -36,9 +39,40 @@ workflow FASTQREPAIR {
 
     ch_final = channel.empty()      // channel: repaired fastq files
 
+    //
+    // Pre-check the input with fq lint: clean samples skip the repair and are only passed
+    // through to the outputs, all the others take the repair path below
+    //
+    ch_to_repair = ch_samplesheet
+    ch_clean = channel.empty()
+    ch_lint_status = channel.empty()
+    if (!params.skip_fq_lint) {
+        FQ_LINT ( ch_samplesheet )
+
+        // fq lint exits with an error on a file with problems, and the task is then ignored (see
+        // conf/modules.config) and has no report. A sample without a report, as well as one whose
+        // report does not look clean, did not pass and goes through the repair
+        ch_lint_status = ch_samplesheet
+            .join(FQ_LINT.out.lint, remainder: true)
+            .map { meta, fastqs, report ->
+                [ meta, fastqs, report != null && fqLintPassed(report.text) ? 'passed' : 'failed' ]
+            }
+
+        ch_lint_status
+        | branch { _meta, _fastqs, status ->
+            clean: status == 'passed'
+            to_repair: true }
+        | set { ch_lint_branches }
+
+        ch_to_repair = ch_lint_branches.to_repair.map { meta, fastqs, _status -> [ meta, fastqs ] }
+
+        FASTQ_PASSTHROUGH ( ch_lint_branches.clean.map { meta, fastqs, _status -> [ meta, fastqs ] } )
+        ch_clean = FASTQ_PASSTHROUGH.out.fastq
+    }
+
     // branch .gz and non gz files
     ch_fastq_ext = channel.empty()
-    ch_samplesheet
+    ch_to_repair
     | branch { _map, fq ->
         gz_files: fq.first().getExtension() == 'gz'
         non_gz_files: true }
@@ -65,8 +99,8 @@ workflow FASTQREPAIR {
         log.warn "No non-empty FASTQ files found after GZRT. Skipping the rest of the pipeline!"
     }
 
-    // If ch_tobewiped_fastq has a size < ch_samplesheet but > zero, then some files were empty and we need to log.warn them
-    ch_samplesheet.map { meta, _fastq -> meta.id }
+    // If ch_tobewiped_fastq has a size < ch_to_repair but > zero, then some files were empty and we need to log.warn them
+    ch_to_repair.map { meta, _fastq -> meta.id }
         .collect()
         .set { all_ids }
 
@@ -117,11 +151,57 @@ workflow FASTQREPAIR {
         ch_final = ch_repaired_fastq_paired_end.concat(ch_repaired_fastq.single_end)
     }
 
+    // Samples that passed fq lint were not repaired, but are part of the output like the others
+    ch_final = ch_final.mix(ch_clean)
+
     //
     // Assess QC of all fastq files (both single and paired end)
     //
     FASTQC ( ch_final )
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.map{ _meta, file -> file })
+
+    //
+    // fq lint status of each sample, published and shown in MultiQC
+    //
+    if (!params.skip_fq_lint) {
+        ch_fq_lint_table = ch_lint_status
+            .map { meta, _fastqs, status -> "${meta.id}\t${status}\t${status == 'passed' ? 'skipped' : 'run'}" }
+            .collectFile(
+                name: 'fq_lint_status_mqc.tsv',
+                storeDir: "${outdir}/QC/fq_lint",
+                seed: [
+                    "# id: 'fq_lint_status'",
+                    "# section_name: 'fq lint'",
+                    "# description: 'Result of the fq lint pre-check of the input files. The repair is skipped for the samples that pass.'",
+                    "# format: 'tsv'",
+                    "# plot_type: 'table'",
+                    "Sample\tfq lint\tRepair",
+                ].join("\n"),
+                sort: true,
+                newLine: true
+            )
+        ch_multiqc_files = ch_multiqc_files.mix(ch_fq_lint_table)
+    }
+
+    //
+    // Samplesheet of the reads in <outdir>/repaired, to be used as --input of a downstream pipeline.
+    // The paths follow the names under which the reads are published there. Samples that were
+    // dropped because all their reads were empty or unrecoverable have no reads, so they are omitted
+    //
+    def repaired_dir = "${file(outdir).toUriString()}/repaired"
+    ch_final
+        .map { meta, _fastqs ->
+            meta.single_end
+                ? "${meta.id},${repaired_dir}/${meta.id}.fastq.gz,"
+                : "${meta.id},${repaired_dir}/${meta.id}_1.fastq.gz,${repaired_dir}/${meta.id}_2.fastq.gz"
+        }
+        .collectFile(
+            name: 'repaired_samplesheet.csv',
+            storeDir: outdir,
+            seed: "sample,fastq_1,fastq_2",
+            sort: true,
+            newLine: true
+        )
 
     //
     // Collate and save software versions

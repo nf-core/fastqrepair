@@ -3,6 +3,25 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v[1.1.2](https://github.com/nf-core/fastqrepair/releases/tag/1.1.2) - Kigali SkyBlue [23/10/2026]
+
+nf-core/tools v4.2.1 update
+
+### `Added`
+
+- [#38](https://github.com/nf-core/fastqrepair/issues/38) - The input reads are checked with [fq lint](https://github.com/stjude-rust-labs/fq) first, and the samples that pass are not repaired: their reads are copied (and compressed, if needed) to `repaired/` with the same names as repaired reads, and they still get FastQC and MultiQC reports. A sample is only skipped if its lint log looks clean; if lint fails or cannot run, it is repaired as before. The result of each sample is shown in a MultiQC table and written to `QC/fq_lint/fq_lint_status_mqc.tsv`. Use `--skip_fq_lint` to repair all the samples. Based on the work of [@fhausmann](https://github.com/fhausmann) in [PR #21](https://github.com/nf-core/fastqrepair/pull/21)
+- [#36](https://github.com/nf-core/fastqrepair/issues/36) - `repaired_samplesheet.csv` is written to the output folder: a samplesheet of the reads in `repaired/` (single- and paired-end), to be used as `--input` of a downstream pipeline
+
+### `Changed`
+
+- [PR #55](https://github.com/nf-core/fastqrepair/pull/55) - Template update for nf-core/tools v4.1.0
+- [PR #60](https://github.com/nf-core/fastqrepair/pull/60) - Template update for nf-core/tools v4.2.1. `nf-schema` bumped to `2.7.3`; the new `manifest.diagram` field points to the workflow diagram
+- Replaced `fix_linting.yml` with `fix-linting.yml`, a call to the shared `nf-core/actions` reusable workflow, and moved `seqeralabs/action-tower-launch` to `v2.4.0` (automated patch PRs [#56](https://github.com/nf-core/fastqrepair/pull/56) and [#57](https://github.com/nf-core/fastqrepair/pull/57))
+
+### `Fixed`
+
+- [#46](https://github.com/nf-core/fastqrepair/issues/46) - The mate (R1/R2) of a paired-end file is now taken from its position in the input instead of being guessed from `_1_`/`_2_` substrings of the file name, which could publish a mate under the wrong name. Contributed by [@sapunyangkut](https://github.com/sapunyangkut) in [PR #51](https://github.com/nf-core/fastqrepair/pull/51)
+
 ## v[1.1.1](https://github.com/nf-core/fastqrepair/releases/tag/1.1.1) - Reggina Amaranth [27/08/2026]
 
 First release since v1.0.0. Includes the never-released v1.1.0 changes plus a nf-core/tools v4.0.3 template update (supersedes the pending v3.4.1, v3.5.1 and v4.0.2 template merges).
