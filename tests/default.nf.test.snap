@@ -15,7 +15,7 @@
                     "wipertools fastqscatter": "1.0.3"
                 },
                 "Workflow": {
-                    "nf-core/fastqrepair": "v1.1.2"
+                    "nf-core/fastqrepair": "v1.2.0"
                 }
             },
             [
