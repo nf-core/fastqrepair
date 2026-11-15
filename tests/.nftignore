@@ -10,3 +10,4 @@ QC/multiqc/multiqc_plots/{svg,pdf,png}/*.{svg,pdf,png}
 QC/multiqc/multiqc_report.html
 QC/fastqc/*_fastqc.{html,zip}
 pipeline_info/*.{html,json,txt,yml}
+repaired_samplesheet.csv

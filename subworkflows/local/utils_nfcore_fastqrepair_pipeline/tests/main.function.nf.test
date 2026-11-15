@@ -1,0 +1,112 @@
+nextflow_function {
+
+    name "Test Functions"
+    script "subworkflows/local/utils_nfcore_fastqrepair_pipeline/main.nf"
+    config "subworkflows/local/utils_nfcore_fastqrepair_pipeline/tests/nextflow.config"
+    tag 'subworkflows'
+    tag 'utils_nfcore_fastqrepair_pipeline'
+    tag 'subworkflows/utils_nfcore_fastqrepair_pipeline'
+
+    // fqLintPassed reads the log of fq lint (fq 0.12.x). These cases document the format it expects;
+    // tests/fq_lint.nf.test runs the real tool and fails if a new fq version changes that format
+
+    test("fqLintPassed - clean log") {
+
+        function "fqLintPassed"
+
+        when {
+            function {
+                """
+                input[0] = "2026-01-01T00:00:00Z  INFO fq-lint start\\n2026-01-01T00:00:00Z  INFO read 100 records\\n2026-01-01T00:00:00Z  INFO fq-lint end\\n"
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert function.success },
+                { assert function.result == true }
+            )
+        }
+    }
+
+    test("fqLintPassed - log with an error") {
+
+        function "fqLintPassed"
+
+        when {
+            function {
+                """
+                input[0] = "2026-01-01T00:00:00Z  INFO fq-lint start\\n2026-01-01T00:00:00Z ERROR [line 4] sequence and quality lengths differ\\n2026-01-01T00:00:00Z  INFO read 100 records\\n2026-01-01T00:00:00Z  INFO fq-lint end\\n"
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert function.success },
+                { assert function.result == false }
+            )
+        }
+    }
+
+    test("fqLintPassed - log without the end banner") {
+
+        function "fqLintPassed"
+
+        when {
+            function {
+                """
+                input[0] = "2026-01-01T00:00:00Z  INFO fq-lint start\\n2026-01-01T00:00:00Z  INFO read 100 records\\n"
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert function.success },
+                { assert function.result == false }
+            )
+        }
+    }
+
+    test("fqLintPassed - no records") {
+
+        function "fqLintPassed"
+
+        when {
+            function {
+                """
+                input[0] = "2026-01-01T00:00:00Z  INFO fq-lint start\\n2026-01-01T00:00:00Z  INFO read 0 records\\n2026-01-01T00:00:00Z  INFO fq-lint end\\n"
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert function.success },
+                { assert function.result == false }
+            )
+        }
+    }
+
+    test("fqLintPassed - empty log") {
+
+        function "fqLintPassed"
+
+        when {
+            function {
+                """
+                input[0] = ""
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert function.success },
+                { assert function.result == false }
+            )
+        }
+    }
+}
